@@ -3,23 +3,35 @@ from langgraph.checkpoint.memory import MemorySaver
 from langchain_core.messages import HumanMessage, AIMessage
 from .state import AgentState
 from .llm import create_llm
-from .agents import create_research_agent, create_analyst_agent, create_writer_agent, create_supervisor_agent
+from .agents import (
+    create_research_agent, create_analyst_agent, create_writer_agent, create_supervisor_agent,
+    create_arsiv_agent, create_tavily_agent, create_translator_agent
+)
 
 def create_research_team_graph():
     llm = create_llm()
-    members = ["researcher", "analyst", "writer"]
+    members = ["researcher", "analyst", "writer", "arsiv", "tavily", "translator"]
     researcher = create_research_agent(llm)
     analyst = create_analyst_agent(llm)
     writer = create_writer_agent(llm)
+    arsiv = create_arsiv_agent(llm)
+    tavily = create_tavily_agent(llm)
+    translator = create_translator_agent(llm)
     supervisor = create_supervisor_agent(llm, members)
     workflow = StateGraph(AgentState)
     workflow.add_node("researcher", researcher)
     workflow.add_node("analyst", analyst)
     workflow.add_node("writer", writer)
+    workflow.add_node("arsiv", arsiv)
+    workflow.add_node("tavily", tavily)
+    workflow.add_node("translator", translator)
     workflow.add_node("supervisor", supervisor)
     workflow.add_edge("researcher", "supervisor")
     workflow.add_edge("analyst", "supervisor")
     workflow.add_edge("writer", "supervisor")
+    workflow.add_edge("arsiv", "supervisor")
+    workflow.add_edge("tavily", "supervisor")
+    workflow.add_edge("translator", "supervisor")
     workflow.add_conditional_edges(
         "supervisor",
         lambda x: x["next"],
@@ -27,6 +39,9 @@ def create_research_team_graph():
             "researcher": "researcher",
             "analyst": "analyst",
             "writer": "writer",
+            "arsiv": "arsiv",
+            "tavily": "tavily",
+            "translator": "translator",
             "FINISH": END
         }
     )

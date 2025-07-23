@@ -6,6 +6,10 @@ AI Research Team is a multi-agent research automation platform built with Flask 
 
 ## Features
 - **Multi-Agent Workflow:** Simulates a team of AI agents (Researcher, Analyst, Writer, Supervisor) for end-to-end research automation.
+- **Broadened Research Sources:**
+  - **Arsiv Agent:** Searches for and summarizes research papers from academic sources.
+  - **Tavily Agent:** Performs web searches for the latest and most relevant information.
+  - **Translator Agent:** Translates and summarizes non-English or complex content from Arsiv and Tavily agents.
 - **LLM-Powered:** Utilizes Google Gemini via LangChain for high-quality, context-aware research and analysis.
 - **Web Interface:** Simple Flask web app for entering research topics and viewing generated reports.
 - **Modular Codebase:** Clean, maintainable architecture with clear separation of concerns (agents, workflow, LLM setup, state management).
@@ -14,6 +18,9 @@ AI Research Team is a multi-agent research automation platform built with Flask 
 ## Tech Stack
 - **Backend:** Python, Flask
 - **AI/LLM:** LangGraph, LangChain, Google Gemini (Generative AI)
+- **Research Paper Search:** Arsiv Agent (arXiv or similar sources)
+- **Web Search:** Tavily Agent (web search API or LLM-powered)
+- **Translation/Summarization:** Translator Agent (LLM-powered)
 - **Frontend:** HTML (Jinja2 templates)
 - **Environment Management:** python-dotenv
 
@@ -54,14 +61,14 @@ python app.py
 ├── core/
 │   ├── llm.py            # LLM setup and configuration
 │   ├── state.py          # Shared state and type definitions
-│   ├── agents.py         # Agent creation logic
+│   ├── agents.py         # Agent creation logic (Researcher, Analyst, Writer, Supervisor, Arsiv, Tavily, Translator)
 │   └── workflow.py       # Workflow/graph logic
 └── templates/
     └── index.html        # Web UI template
 ```
 
 ## Customization & Extensibility
-- Add new agent types (e.g., Translator, Archivist) in `core/agents.py`.
+- Add new agent types (e.g., more data sources, custom analysis) in `core/agents.py`.
 - Modify or extend the workflow in `core/workflow.py`.
 - Update the web UI in `templates/index.html`.
 
@@ -74,4 +81,5 @@ This project is licensed under the MIT License.
 ## Acknowledgments
 - [LangChain](https://github.com/langchain-ai/langchain)
 - [LangGraph](https://github.com/langchain-ai/langgraph)
-- [Google Gemini](https://ai.google.dev/) 
+- [Google Gemini](https://ai.google.dev/)
+- [arXiv](https://arxiv.org/) (for research paper data) 

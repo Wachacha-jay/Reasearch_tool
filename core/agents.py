@@ -117,6 +117,120 @@ def create_writer_agent(llm):
 
 # Additional agents (archivist, translator, custom, supervisor) would be implemented similarly, following the same pattern.
 
+# Arsiv Agent (for research papers)
+def create_arsiv_agent(llm):
+    arsiv_prompt = ChatPromptTemplate.from_messages([
+        ("system", """You are an Arsiv Research Paper Agent. Your role is to:\n1. Search for relevant research papers on the given topic using Arsiv or similar sources.\n2. Return a list of relevant papers with titles, authors, and abstracts.\n3. Provide a brief summary of the most relevant findings.\n"""),
+        MessagesPlaceholder(variable_name="messages"),
+        ("human", "Search for research papers on: {research_topic}")
+    ])
+    arsiv_chain = arsiv_prompt | llm
+    def arsiv_agent(state: AgentState) -> AgentState:
+        try:
+            response = arsiv_chain.invoke({
+                "messages": state["messages"],
+                "research_topic": state["research_topic"]
+            })
+            arsiv_findings = {
+                "arsiv_summary": response.content,
+                "arsiv_papers": response.content[:500] + "..." if len(response.content) > 500 else response.content
+            }
+            return {
+                "messages": state["messages"] + [AIMessage(content=response.content)],
+                "next": "translator",
+                "current_agent": "arsiv",
+                "research_topic": state["research_topic"],
+                "findings": {**state.get("findings", {}), "arsiv": arsiv_findings},
+                "final_report": state.get("final_report", "")
+            }
+        except Exception as e:
+            error_msg = f"Arsiv agent error: {str(e)}"
+            return {
+                "messages": state["messages"] + [AIMessage(content=error_msg)],
+                "next": "translator",
+                "current_agent": "arsiv",
+                "research_topic": state["research_topic"],
+                "findings": state.get("findings", {}),
+                "final_report": state.get("final_report", "")
+            }
+    return arsiv_agent
+
+# Tavily Agent (for web search)
+def create_tavily_agent(llm):
+    tavily_prompt = ChatPromptTemplate.from_messages([
+        ("system", """You are a Tavily Web Search Agent. Your role is to:\n1. Search the web for the latest and most relevant information on the research topic.\n2. Return a summary of key findings and important web sources.\n3. Provide URLs or references where possible.\n"""),
+        MessagesPlaceholder(variable_name="messages"),
+        ("human", "Search the web for: {research_topic}")
+    ])
+    tavily_chain = tavily_prompt | llm
+    def tavily_agent(state: AgentState) -> AgentState:
+        try:
+            response = tavily_chain.invoke({
+                "messages": state["messages"],
+                "research_topic": state["research_topic"]
+            })
+            tavily_findings = {
+                "tavily_summary": response.content,
+                "tavily_web_results": response.content[:500] + "..." if len(response.content) > 500 else response.content
+            }
+            return {
+                "messages": state["messages"] + [AIMessage(content=response.content)],
+                "next": "translator",
+                "current_agent": "tavily",
+                "research_topic": state["research_topic"],
+                "findings": {**state.get("findings", {}), "tavily": tavily_findings},
+                "final_report": state.get("final_report", "")
+            }
+        except Exception as e:
+            error_msg = f"Tavily agent error: {str(e)}"
+            return {
+                "messages": state["messages"] + [AIMessage(content=error_msg)],
+                "next": "translator",
+                "current_agent": "tavily",
+                "research_topic": state["research_topic"],
+                "findings": state.get("findings", {}),
+                "final_report": state.get("final_report", "")
+            }
+    return tavily_agent
+
+# Translator Agent (for translation and summarization)
+def create_translator_agent(llm):
+    translator_prompt = ChatPromptTemplate.from_messages([
+        ("system", """You are a Translator and Summarizer AI. Your role is to:\n1. Translate non-English content to English if needed.\n2. Summarize the provided content clearly and concisely.\n3. Highlight key insights from translated material.\n"""),
+        MessagesPlaceholder(variable_name="messages"),
+        ("human", "Translate and summarize the latest findings for: {research_topic}")
+    ])
+    translator_chain = translator_prompt | llm
+    def translator_agent(state: AgentState) -> AgentState:
+        try:
+            response = translator_chain.invoke({
+                "messages": state["messages"],
+                "research_topic": state["research_topic"]
+            })
+            translation_findings = {
+                "translator_summary": response.content,
+                "key_translated_insights": response.content[:500] + "..." if len(response.content) > 500 else response.content
+            }
+            return {
+                "messages": state["messages"] + [AIMessage(content=response.content)],
+                "next": "supervisor",
+                "current_agent": "translator",
+                "research_topic": state["research_topic"],
+                "findings": {**state.get("findings", {}), "translator": translation_findings},
+                "final_report": state.get("final_report", "")
+            }
+        except Exception as e:
+            error_msg = f"Translator agent error: {str(e)}"
+            return {
+                "messages": state["messages"] + [AIMessage(content=error_msg)],
+                "next": "supervisor",
+                "current_agent": "translator",
+                "research_topic": state["research_topic"],
+                "findings": state.get("findings", {}),
+                "final_report": state.get("final_report", "")
+            }
+    return translator_agent
+
 def create_supervisor_agent(llm, members):
     options = ["FINISH"] + members
     supervisor_prompt = ChatPromptTemplate.from_messages([
