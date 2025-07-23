@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AI Research Team</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 2em; background: #f8f9fa; }
+        .container { max-width: 700px; margin: auto; background: #fff; padding: 2em; border-radius: 8px; box-shadow: 0 2px 8px #ccc; }
+        h1 { color: #333; }
+        textarea { width: 100%; min-height: 200px; }
+        .error { color: #b00; margin-bottom: 1em; }
+        .report { background: #f4f4f4; padding: 1em; border-radius: 6px; margin-top: 1em; white-space: pre-wrap; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>AI Research Team</h1>
+    <form method="post">
+        <label for="topic">Enter your research topic:</label><br>
+        <input type="text" id="topic" name="topic" value="{{ topic|e }}" style="width:100%;padding:0.5em;margin:1em 0;" required><br>
+        <button type="submit">Run Research</button>
+    </form>
+    {% if error %}
+        <div class="error">{{ error }}</div>
+    {% endif %}
+    {% if report %}
+        <h2>Research Report</h2>
+        <div class="report">{{ report }}</div>
+    {% endif %}
+</div>
+</body>
+</html> 

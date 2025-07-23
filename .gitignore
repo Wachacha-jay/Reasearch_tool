@@ -1,0 +1,25 @@
+# Ignore compiled Python files
+__pycache__/
+*.pyc
+
+# Ignore virtual environment folders
+venv/
+.venv/
+
+# Ignore jupiter notebooks
+*.ipynb_checkpoints
+*.ipynb
+
+# Ignore operating system files
+.DS_Store
+Thumbs.db
+
+# Ignore editor/IDE files
+.vscode/
+.idea/
+
+# Ignore log files
+*.log
+
+# Ignore environment variables file
+.env
